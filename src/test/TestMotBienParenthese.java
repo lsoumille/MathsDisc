@@ -1,5 +1,7 @@
 package test;
 
+import java.util.ArrayList;
+
 import math.MotBienParenthese;
 
 /**
@@ -8,7 +10,9 @@ import math.MotBienParenthese;
 public class TestMotBienParenthese {
     public static void main(String[] args) {
         int n = 3;
-
-        System.out.println(MotBienParenthese.enumMotsBP(n));
+        ArrayList<String> allBP = MotBienParenthese.enumMotsBP(n); 
+        for(String str : allBP){
+            System.out.println(str);
+        }
     }
 }
