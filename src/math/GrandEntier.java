@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 /**
  * @author PTung
  */
@@ -61,7 +63,7 @@ public class GrandEntier {
         }
 
         listeEntier = values;
-        System.out.println(this);
+        //System.out.println(this);
     }
 
     /**
@@ -215,9 +217,9 @@ public class GrandEntier {
             return this;
         }
 
-        ArrayList<Integer> result = new ArrayList<Integer>();
         ArrayList<Integer> values1 = listeEntier;
         ArrayList<Integer> values2 = ge.getListeEntier();
+        ArrayList<Integer> result = new ArrayList<Integer>(values1.size() + values2.size());
 
         // Ajout de zéros en fin de liste
         values1.add(0);
@@ -294,7 +296,83 @@ public class GrandEntier {
         cleanList(result);
         return new GrandEntier(result);
     }
-
+    
+    public GrandEntier multiplyLucas(GrandEntier ge){
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        ArrayList<Integer> values1 = listeEntier;
+        ArrayList<Integer> values2 = ge.getListeEntier();
+        int carryMul = 0;
+        int resTemp = 0;
+        int resultIn = 0;
+        for(int i = 0 ; i < values1.size()  ; ++i){
+            for(int j = 0 ; j < values2.size() ; ++j){
+                //System.out.println(values1.get(i) + " * " + values2.get(j) + " + " + carryMul);
+                resTemp = values1.get(i) * values2.get(j) + carryMul;
+                carryMul = resTemp / B;
+                resTemp %= B;
+               // System.out.println(carryMul);
+               // System.out.println(result.size());
+                if(i + j < result.size()){
+                    //System.out.println("salut");
+                    resultIn = result.get(i + j);
+                    //System.out.println(i + j);
+                }
+                if(resultIn != 0){
+                    resTemp += resultIn;
+                    //System.out.println(result.get(2));
+                    //System.out.println(result);
+                    if(i + j + 1 >= result.size()){
+                        result.add(i + j + 1,  resTemp / B);
+                        //System.out.println("add" + result.get(i + j +1) + " ind " + i + j + 1);
+                    } else {
+                        int val = result.get(i + j + 1);
+                        result.set(i + j + 1, val + resTemp / B);
+                        //System.out.println("set" + result.get(i + j +1) + " ind " + i + j + 1);
+                    }
+                    resTemp %= B;
+                    result.set(i + j, resTemp);
+                } else {
+                    result.add(i + j, resTemp);
+                }
+                //System.out.println(result.get(i + j) + " indice = " + i + j);
+                //System.out.println(carryMul);
+                //System.out.println(values2.size());
+                if(j == values2.size() - 1){
+                    result.add(i + j + 1, carryMul);
+                    carryMul = 0;
+                    //System.out.println("carry " + result.get(2) + " ind " + i + j + 1);
+                }
+                resultIn = 0;
+            }
+        }
+        /*
+        System.out.println(values1.size());
+        String strNb2 = "";
+        for(Integer entier : values2){
+            strNb2 += entier;
+        }
+        int nb2 = Integer.parseInt(strNb2);
+        int nbDecalages = 0;
+        int resTemp = 0;
+        System.out.println(values1.size());
+        for(int i = values1.size(); i > 0 ; --i, ++nbDecalages){
+            int multiDecal = 1;
+            for(int j = 0 ; j < nbDecalages ; ++j){
+                multiDecal *= B;
+                System.out.println(multiDecal);
+            }
+            resTemp += values1.get(i - 1) * multiDecal * nb2;
+            System.out.println(resTemp);
+        }
+        String strResult = Integer.toString(resTemp,B);
+        System.out.println(strResult);
+        for(int i = 0 ; i < strResult.length() ; ++i){
+            result.add((int)strResult.charAt(i));
+        }*/
+        cleanList(result);
+        return new GrandEntier(result);
+    }
+    
     /**
      * Calcule la multiplication this * ge
      *
@@ -462,20 +540,22 @@ public class GrandEntier {
 
     public static void main(String[] args) {
         try {
-            /*ArrayList<Integer> numbers1 = new ArrayList<Integer>();
+            ArrayList<Integer> numbers1 = new ArrayList<Integer>();
             ArrayList<Integer> numbers2 = new ArrayList<Integer>();
-            numbers1.add(1);
+            numbers1.add(15);
             numbers1.add(2);
-            numbers2.add(15);
-            //numbers2.add(10);
+            numbers2.add(2);
+            numbers2.add(10);
 
             GrandEntier grandEntier1 = new GrandEntier(numbers1);
             GrandEntier grandEntier2 = new GrandEntier(numbers2);
-            GrandEntier grandEntier3 = grandEntier1.add(grandEntier2);
-            System.out.println(grandEntier1.getDecimalValue());
-            System.out.println(grandEntier2.getDecimalValue());
-            System.out.println(grandEntier3.getDecimalValue());
-            System.out.println(grandEntier1);*/
+            System.out.println(grandEntier1);
+            System.out.println(grandEntier2);
+            GrandEntier grandEntier3 = grandEntier1.multiplyLucas(grandEntier2);
+          //  System.out.println(grandEntier1.getDecimalValue());
+          //  System.out.println(grandEntier2.getDecimalValue());
+          //  System.out.println(grandEntier3.getDecimalValue());
+          //  System.out.println(grandEntier3);
 
             compareSimpleWithFast(args);
         } catch (Exception e) {
