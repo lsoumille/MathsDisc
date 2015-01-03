@@ -297,6 +297,11 @@ public class GrandEntier {
         return new GrandEntier(result);
     }
     
+    /*
+     * calcule la multiplication this*ge
+     * 
+     * @complexité O(n^2) (double boucle imbriquée)
+     */
     public GrandEntier multiplyLucas(GrandEntier ge){
         ArrayList<Integer> result = new ArrayList<Integer>();
         ArrayList<Integer> values1 = listeEntier;

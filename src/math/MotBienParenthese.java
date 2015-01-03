@@ -14,17 +14,19 @@ public class MotBienParenthese {
      * Affiche tous les mots bien parenthésés de longueur 2n
      *
      * @param n
+     * 
+     * @complexité equation = T(N-1) + const - > O(n)
      */
     public static Set<String> enumMotsBP(int n) {
         if (n == 1) {
-        return new HashSet<String>(Arrays.asList("()"));
+            return new HashSet<String>(Arrays.asList("()"));
         }
         Set<String> actuelMotsBP = enumMotsBP(n-1);
         Set<String> nouvMotsBP = new HashSet<String>();
         for (String mot : actuelMotsBP) {
-        nouvMotsBP.add("()"+ mot);
-        nouvMotsBP.add(mot +"()");
-        nouvMotsBP.add("("+ mot +")");
+            nouvMotsBP.add("()"+ mot);
+            nouvMotsBP.add(mot +"()");
+            nouvMotsBP.add("("+ mot +")");
         }
         return nouvMotsBP;
     }
@@ -40,6 +42,8 @@ public class MotBienParenthese {
     
     /*
      * calcul le nombre catalan correspondant au nombre passé en paramètre
+     * 
+     * @complexité equation = T(N-1) + n^2 (depend de la taille de n) -> O(n^2)
      */
     public static double catalan (int n){
         if(n == 1) return 1;
@@ -50,6 +54,9 @@ public class MotBienParenthese {
     
     /*
      * catalan2 methode itérative utilisant un tableau de long
+     * 
+     * @complexité O(n^2) (n nb fois que l'on parcout la boucle(0(n)) * multiplication 
+     *  en fonction du nombre d'échantillon (O(n))
      */
     public static long[] catalan2 (int n){
         long[] nbCat = new long[n+1];
@@ -62,6 +69,8 @@ public class MotBienParenthese {
     
     /*
      * test si un mot est bien parenthésé
+     * 
+     * @complexité O(n) (n nb fois que l'on parcout la boucle) 
      */
     public static boolean testParenthese(String mot){
        int kLength = mot.length();
@@ -81,6 +90,7 @@ public class MotBienParenthese {
     
     /*
      * affiche un mot bien parenthésé comme "il le faut"
+     * @complexité O(n^2) (double boucle)
      */
     public static void afficheMotBP(String mot){
         int kLength = mot.length();
@@ -105,6 +115,8 @@ public class MotBienParenthese {
     
     /*
      * retourne la profondeur d'un mot
+     * 
+     * @complexité O(n) (n nb de fois la boucle parcourue)
      */
     public static int profondeur(String mot){
         int kLength = mot.length();
