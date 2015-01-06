@@ -152,6 +152,7 @@ public class GrandEntier {
      * @param n
      * @return Retourne le résultat du produit
      * @throws IllegalArgumentException
+     * @complexite O(N)
      */
     public GrandEntier shiftLeft(int n) throws IllegalArgumentException {
         if (n < 0) {
@@ -174,6 +175,7 @@ public class GrandEntier {
      * @param n
      * @return Retourne le résultat de la division
      * @throws IllegalArgumentException
+     * @complexite O(N)
      */
     public GrandEntier shiftRight(int n) throws IllegalArgumentException {
         if (n < 0) {
@@ -181,7 +183,7 @@ public class GrandEntier {
         }
 
         ArrayList<Integer> values = new ArrayList<Integer>();
-        for (int i = (n-1); i < listeEntier.size(); i++) {
+        for (int i = n; i < listeEntier.size(); i++) {
             values.add(listeEntier.get(i));
         }
 
@@ -197,12 +199,11 @@ public class GrandEntier {
      * Supprime les zéros en fin de liste
      *
      * @param list
+     * @complexite O(N)
      */
     private void cleanList(ArrayList<Integer> list) {
-        for (int i = list.size()-1; i > 0; --i) {
-            if (list.get(i) <= 0) {
-                list.remove(i);
-            }
+        for (int i = list.size()-1; i > 0 && list.get(i) <= 0; --i) {
+            list.remove(i);
         }
     }
 
@@ -211,6 +212,7 @@ public class GrandEntier {
      *
      * @param ge
      * @return Retourne le résultat de la somme
+     * @complexite O(N)
      */
     public GrandEntier add(GrandEntier ge) {
         if (ge == null || ge.length() <= 0) {
@@ -266,7 +268,11 @@ public class GrandEntier {
         cleanList(result);
         return new GrandEntier(result);
     }
-
+    
+    /*
+     * jkdslqdqsd
+     * @complexite O(N)
+     */
     public GrandEntier sub(GrandEntier ge) {
         if (ge.length() > this.length() || ge.getDecimalValue() >= this.getDecimalValue()) {
             return new GrandEntier(new ArrayList<Integer>(){{add(0);}});
@@ -383,118 +389,170 @@ public class GrandEntier {
      *
      * @param ge
      * @return Retourne le résultat de la multiplication
+     * @complexite O(N²)
      */
-    public GrandEntier multiply(GrandEntier ge) {
-        if (ge == null || ge.length() <= 0) {
+        public GrandEntier multiply(GrandEntier ge) {
+            if (ge == null || ge.length() <= 0) {
             return this;
-        }
-
-        ArrayList<Integer> result = new ArrayList<Integer>();
-        ArrayList<Integer> values1 = listeEntier;
-        ArrayList<Integer> values2 = ge.getListeEntier();
-        int nMax = Math.max(values1.size(), values2.size())+2;
-        while (nMax-- > 0) {
+            }
+            ArrayList<Integer> result = new ArrayList<Integer>();
+            ArrayList<Integer> values1 = listeEntier;
+            ArrayList<Integer> values2 = ge.getListeEntier();
+            int nMax = Math.max(values1.size(), values2.size())+2;
+            while (nMax-- > 0) {
             result.add(0);
-        }
-
-        // Ajout de -1 en fin de liste
-        ArrayList<Integer> negativeList = new ArrayList<Integer>();
-        for (int i = 0; i < Math.abs(values1.size() - values2.size()); i++) {
+            }
+            // Ajout de -1 en fin de liste
+            ArrayList<Integer> negativeList = new ArrayList<Integer>();
+            for (int i = 0; i < Math.abs(values1.size() - values2.size()); i++) {
             negativeList.add(-1);
-        }
-        if (values1.size() < values2.size()) {
+            }
+            if (values1.size() < values2.size()) {
             values1.addAll(negativeList);
-        } else if (values2.size() < values1.size()) {
+            } else if (values2.size() < values1.size()) {
             values2.addAll(negativeList);
-        }
-        int carry = 0;
-
-        for (int i = 0; i < values1.size(); i++) {
+            }
+            int carry = 0;
+            for (int i = 0; i < values1.size(); i++) {
             for (int j = 0; j < values2.size(); j++) {
-                int val1;
-                int val2;
-
-                if (values1.get(i) != -1 && values2.get(j) != -1) {
-                    val1 = values1.get(i);
-                } else if (values1.get(i) == -1 && values2.get(j) != -1) {
-                    val1 = 1;
-                } else {
-                    val1 = 0;
-                }
-                if (values1.get(i) != -1 && values2.get(j) != -1) {
-                    val2 = values2.get(j);
-                } else if (values1.get(i) != -1 && values2.get(j) == -1) {
-                    val2 = 1;
-                } else {
-                    val2 = 0;
-                }
-                val1 += carry;
-                carry = 0;
-
-                int value = val1*val2;
-                value += result.get(i+j);
-
-                if (value >= B) {
-                    carry += (value / B);
-                    value %= B;
-
-                    if (result.size() > (i+j+1)) {
-                        result.set(i+j+1, result.get(i+j+1)+carry);
-                    } else {
-                        result.add(carry);
-                    }
-                    carry = 0;
-                }
-                result.set(i+j, value);
-
-                result.add(carry);
-                carry = 0;
-            }
-        }
-
-        cleanList(values1);
-        cleanList(values2);
-        cleanList(result);
-        if (carry > 0) {
-            if (carry >= B) {
-                int car = carry/B;
-                carry %= B;
-                result.add(carry);
-                result.add(car);
+            int val1;
+            int val2;
+            if (values1.get(i) != -1 && values2.get(j) != -1) {
+            val1 = values1.get(i);
+            } else if (values1.get(i) == -1 && values2.get(j) != -1) {
+            val1 = 1;
             } else {
-                result.add(carry);
+            val1 = 0;
             }
-        }
-        return new GrandEntier(result);
-    }
+            if (values1.get(i) != -1 && values2.get(j) != -1) {
+            val2 = values2.get(j);
+            } else if (values1.get(i) != -1 && values2.get(j) == -1) {
+            val2 = 1;
+            } else {
+            val2 = 0;
+            }
+            val1 += carry;
+            carry = 0;
+            int value = val1*val2;
+            value += result.get(i+j);
+            if (value >= B) {
+            carry += (value / B);
+            value %= B;
+            if (result.size() > (i+j+1)) {
+            result.set(i+j+1, result.get(i+j+1)+carry);
+            } else {
+            result.add(carry);
+            }
+            carry = 0;
+            }
+            result.set(i+j, value);
+            result.add(carry);
+            carry = 0;
+            }
+            }
+            cleanList(values1);
+            cleanList(values2);
+            cleanList(result);
+            if (carry > 0) {
+            if (carry >= B) {
+            int car = carry/B;
+            carry %= B;
+            result.add(carry);
+            result.add(car);
+            } else {
+            result.add(carry);
+            }
+            }
+            return new GrandEntier(result);
+            }
 
     /**
      * Calcule la multiplication this * ge en utilisant l'algorithme de Karatsuba de manière récursive
      *
      * @param ge
      * @return Retourne le résultat de la multiplication
+     * @complexite O(N^log2(3))
      */
-    public GrandEntier multiplyFast(GrandEntier ge) {
-        int N = Math.max(this.length(), ge.length());
-        N = (N/2)+(N%2); //
-
-        if (N < 2) { // Lorsque la taille de l'écriture max est égale à 1, multiplication normale
-            return this.multiply(ge);
-        }
-
-        GrandEntier b = this.shiftRight(N); // b = this/B^N
-        GrandEntier a = this.sub(b.shiftLeft(N)); // a = this - (b*B^N)
-        GrandEntier d = ge.shiftRight(N); // d = ge/B^N
-        GrandEntier c = ge.sub(d.shiftLeft(N)); // c = ge - (d*B^N)
-
-        GrandEntier ac = a.multiplyFast(c);
-        GrandEntier bd = d.multiplyFast(d);
-        GrandEntier abcd = a.add(b).multiplyFast(c.add(d)); // (a-b)(c-d)
-
-        // ac*B^2N + (ac + bd - abcd) * B^N + bd
-        return ac.shiftLeft(2*N).add(ac.add(bd).sub(abcd)).shiftLeft(N).add(bd);
-    }
-
+        public GrandEntier multiplyFast(GrandEntier ge) {
+            int N = Math.max(this.length(), ge.length());
+            if (N <= 1) {
+                return this.multiply(ge);
+            }
+            N=(N/2)+(N%2);
+            
+            GrandEntier a = this.shiftRight(N); // a = this/B^N
+            GrandEntier b = this.sub(a.shiftLeft(N)); // b = this - (a*B^N)
+            GrandEntier c = ge.shiftRight(N); // c = ge/B^N
+            GrandEntier d = ge.sub(c.shiftLeft(N)); // d = ge - (c*B^N)
+            GrandEntier ac = a.multiplyFast(c);
+            GrandEntier bd = b.multiplyFast(d);
+            GrandEntier ab;
+            
+            boolean negative = false;
+            if (a.compareTo(b) == -1) {
+            negative = !negative;
+            ab = b.sub(a);
+            } else {
+            ab = a.sub(b);
+            }
+            GrandEntier cd;
+            if (c.compareTo(d) == -1) {
+            negative = !negative;
+            cd = d.sub(c);
+            } else {
+            cd = c.sub(d);
+            }
+            GrandEntier abcd = ab.multiplyFast(cd); // (a-b)(c-d)
+            // ac*B^2N + (ac + bd + abcd) * B^N + bd
+            if (negative) {
+            return ac.shiftLeft(2*N).add((ac.add(bd).add(abcd)).shiftLeft(N)).add(bd);
+            }
+            // ac*B^2N + (ac + bd - abcd) * B^N + bd
+            return ac.shiftLeft(2*N).add((ac.add(bd).sub(abcd)).shiftLeft(N)).add(bd);
+            }
+        
+        /*
+         * multiplyfast
+         * @complexite O(N^log2(3))
+         */
+        public GrandEntier multiplyFastPlus(GrandEntier ge) {
+            int N = Math.max(this.length(), ge.length());
+            if (N <= 900) {
+                return this.multiply(ge);
+            }
+            N=(N/2)+(N%2);
+            
+            GrandEntier a = this.shiftRight(N); // a = this/B^N
+            GrandEntier b = this.sub(a.shiftLeft(N)); // b = this - (a*B^N)
+            GrandEntier c = ge.shiftRight(N); // c = ge/B^N
+            GrandEntier d = ge.sub(c.shiftLeft(N)); // d = ge - (c*B^N)
+            GrandEntier ac = a.multiplyFast(c);
+            GrandEntier bd = b.multiplyFast(d);
+            GrandEntier ab;
+            
+            boolean negative = false;
+            if (a.compareTo(b) == -1) {
+            negative = !negative;
+            ab = b.sub(a);
+            } else {
+            ab = a.sub(b);
+            }
+            GrandEntier cd;
+            if (c.compareTo(d) == -1) {
+            negative = !negative;
+            cd = d.sub(c);
+            } else {
+            cd = c.sub(d);
+            }
+            GrandEntier abcd = ab.multiplyFast(cd); // (a-b)(c-d)
+            // ac*B^2N + (ac + bd + abcd) * B^N + bd
+            if (negative) {
+            return ac.shiftLeft(2*N).add((ac.add(bd).add(abcd)).shiftLeft(N)).add(bd);
+            }
+            // ac*B^2N + (ac + bd - abcd) * B^N + bd
+            return ac.shiftLeft(2*N).add((ac.add(bd).sub(abcd)).shiftLeft(N)).add(bd);
+            }
+        
     /**
      * Compare experimentalement les temps de calculs moyens de multiply et multiplyFast
      * pour des entiers générés aléatoirement
@@ -520,14 +578,16 @@ public class GrandEntier {
         System.out.println("# bits ||  multiply   || multiplyFast ");
         System.out.println("-------------------------------------------");
 
+        BigInteger biA;
+        BigInteger biB;
         for (int l = 1; l <= MAXBITLENGTH; l*=2) {
             r.setSeed(fixedSeed);
             System.gc(); // Nettoyage pour avoir des résultats plus significatifs
             t0 = System.currentTimeMillis();
             for (int i = 1; i <= n; i++) {
-                a = new GrandEntier(l, r);
-                b = new GrandEntier(l, r);
-                a.multiply(b);
+                biA = new BigInteger(l, r);
+                biB = new BigInteger(l, r);
+                biA.multiply(biB);
             }
             simpleTime = System.currentTimeMillis()-t0;
             r.setSeed(fixedSeed); // Pour générer les mêmes nombres pseudo-aléatoire
@@ -536,7 +596,7 @@ public class GrandEntier {
             for (int i = 1; i <= n; i++) {
                 a = new GrandEntier(l, r);
                 b = new GrandEntier(l, r);
-                a.multiplyFast(b);
+                a.multiplyFastPlus(b);
             }
             fastTime = System.currentTimeMillis()-t0;
             System.out.println(l +" bits ||      "+ simpleTime/n +"      ||     "+fastTime/n);
@@ -547,21 +607,36 @@ public class GrandEntier {
         try {
             ArrayList<Integer> numbers1 = new ArrayList<Integer>();
             ArrayList<Integer> numbers2 = new ArrayList<Integer>();
-            numbers1.add(15);
             numbers1.add(2);
+            numbers1.add(2);
+            numbers1.add(2);
+            //numbers1.add(3);
+            numbers2.add(2);
             numbers2.add(2);
             numbers2.add(10);
+           // numbers2.add(10);
+           // numbers2.add(10);
 
             GrandEntier grandEntier1 = new GrandEntier(numbers1);
             GrandEntier grandEntier2 = new GrandEntier(numbers2);
-            System.out.println(grandEntier1);
-            System.out.println(grandEntier2);
-            GrandEntier grandEntier3 = grandEntier1.multiplyLucas(grandEntier2);
+          // System.out.println(grandEntier1);
+          // System.out.println(grandEntier2);
+          //  GrandEntier grandEntier3 = grandEntier2.multiplyFast(grandEntier1);
+          //  GrandEntier ge4 = grandEntier1.multiply(grandEntier2);
           //  System.out.println(grandEntier1.getDecimalValue());
           //  System.out.println(grandEntier2.getDecimalValue());
           //  System.out.println(grandEntier3.getDecimalValue());
           //  System.out.println(grandEntier3);
+          //  System.out.println(ge4);
 
+       /*    ArrayList<Integer> numbers3 = new ArrayList<Integer>();
+           ArrayList<Integer> numbers4 = new ArrayList<Integer>();
+           numbers3.add(4);
+           numbers3.add(1);
+           numbers4.add(4);
+           GrandEntier grandEntier3 = new GrandEntier(numbers3);
+           GrandEntier grandEntier4 = new GrandEntier(numbers4);
+           System.out.println(grandEntier3.sub(grandEntier4));*/
             compareSimpleWithFast(args);
         } catch (Exception e) {
             System.err.println("Le programme a besoin d'un entier en paramètre " +
@@ -569,4 +644,8 @@ public class GrandEntier {
             e.printStackTrace();
         }
     }
+    
+    /*
+     * Q7 - l'algorithme de Karatsuba est plus efficace a partir de 1024 bits
+     */
 }
